@@ -1,40 +1,29 @@
-# Welcome
+# Good job!
 
-Welcome to the part one, of this demo.
-Here are the steps you need to do now:
+Welcome to the part two, of this demo.
+The next instructions make the assumption that you have already finished the
+previous step.
 
-* 1. Configure your local clone as per the README (Project ID and API Key)
-* 2. Install Dependencies
+* 1. Enable Google Authentication in your Firebase project
+
+Go to your [Firebase console](https://console.firebase.google.com) and navigate to
+Auth / SIGN_IN METHOD. From there enable the Google Sign-in provider.
+
+* 2. Deploy new Database rules
 
 ```sh
-npm install && bower install
+firebase deploy --only database
 ```
 
-* 3. Install the Firebase CLI
-
-```sh
-npm install -g firebase-tools
-```
-
-* 4. Test the application locally
+* 3. Test the application locally
 
 ```sh
 npm run dev
 ```
 
-* 5. Deploy it to Firebase Hosting
+Login with your Google account (and log out)
 
-* 5.1. Create .firebaserc -file in the project directory with following content:
-
-```json
-{
-  "projects": {
-    "default": "YOUR_PROJECT_ID"
-  }
-}
-```
-
-* 5.2. Then build the assets and deploy to hosting:
+* 5. Deploy this new version to to Firebase Hosting
 
 ```sh
 npm run deploy
