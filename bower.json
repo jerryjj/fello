@@ -1,0 +1,22 @@
+{
+  "name": "fello",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "Jerry Jalava <jerry.jalava@qvik.fi>"
+  ],
+  "license": "MIT",
+  "moduleType": [],
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap-sass": "3.3.7"
+  }
+}

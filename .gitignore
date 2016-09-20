@@ -1,0 +1,8 @@
+.DS_Store
+node_modules
+bower_components
+public
+.firebaserc
+storage.rules
+development.env
+npm-debug.log
