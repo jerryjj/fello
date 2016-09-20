@@ -21,13 +21,14 @@ Even though this example is Serverless, you need Node.JS installed for developme
 
 ## Local development
 
-1. Clone the repo
-1.1. Switch to the branch you want to test out (read the STEP_INFO.md)
-2. Install dependencies
+* 1. Clone the repo
+* 1.1. Switch to the branch you want to test out (read the STEP_INFO.md)
+* 2. Install dependencies
+
 ```sh
 npm install && bower install
 ```
-3. Insert your Firebase Database credentials here (in this README):
+* 3. Insert your Firebase Database credentials here (in this README):
 
 ```
 FIREBASE_PROJECT_ID: MY-PROJECT-ID
@@ -41,7 +42,8 @@ export FIREBASE_PROJECT_ID=MY-PROJECT-ID
 export FIREBASE_API_KEY=MY-API-KEY
 ```
 
-4. Run the dev server with livereload
+* 4. Run the dev server with livereload
+
 ```sh
 npm run dev
 ```
