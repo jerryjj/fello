@@ -23,7 +23,7 @@ npm run dev
 
 Login with your Google account (and log out)
 
-* 5. Deploy this new version to to Firebase Hosting
+* 4. Deploy this new version to to Firebase Hosting
 
 ```sh
 npm run deploy
