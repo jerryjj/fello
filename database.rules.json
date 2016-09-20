@@ -5,6 +5,20 @@
     "users": {
       ".write": "auth != null",
       "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid"
+      }
+    },
+    "messages": {
+      ".read": true,
+      ".write": "auth != null",
+       "$id": {
+         ".validate": "newData.hasChildren(['body', 'username'])"
+       }
+    },
+    "users-messages": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
         ".write": "$uid === auth.uid"
       }
     }

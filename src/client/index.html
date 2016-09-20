@@ -91,6 +91,9 @@
                   <span class="username">Username</span>
                 </div>
                 <div class="panel-body">
+                  <ul class="nav nav-pills" role="tablist">
+                    <li role="messages"><a>My Messages: <span class="badge my-message-count">0</span></a></li>
+                  </ul>
                   <p class="text-center">
                     This is a mini social messaging platform. Built as a demo for "Serverless with Firebase".
                   </p>
@@ -108,8 +111,33 @@
                 </div>
               </div>
             </div>
-            <div class="col-lg-8 col-md-8 col-sm-8">
-              Some content could be here
+            <div class="col-lg-8 col-md-8 col-sm-8 feed-column">
+
+              <div id="post-row" class="row" style="display: none;">
+                <div class="panel panel-default">
+                  <div class="panel-body" id="post-form">
+                    <form id="post-form" action="#">
+                      <div class="row">
+                        <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
+                          <div class="form-group">
+                            <textarea class="form-control input-lg" id="body-i" placeholder="Write a nice post! (140 characters)"></textarea>
+                          </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                          <button type="submit" class="btn btn-primary btn-publish pull-left">Publish</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div> <!-- /#post-row -->
+
+              <div id="feed-row" class="row" style="display: block;">
+                <div class="panel panel-default">
+                  <div class="panel-body items"></div>
+                </div>
+              </div> <!-- /#feed-row -->
+
             </div>
 
           </div>

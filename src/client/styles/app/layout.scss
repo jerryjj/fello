@@ -33,3 +33,23 @@ body {
 #me-column .panel-body {
   padding: 12px;
 }
+#post-row > .panel {
+  margin-bottom: 5px;
+}
+
+/* Feed items */
+.media-left, .media > .media-left {
+  padding-right: 0px;
+}
+.media-right, .media > .media-right {
+  padding-left: 0px;
+}
+.media-body > blockquote {
+  padding: 9.5px 10px;
+}
+
+@media (max-width: 768px) {
+  .page-content {
+    padding: 15px 10px 0 10px;
+  }
+}
