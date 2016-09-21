@@ -33,6 +33,8 @@ class Fello {
     this.user = {};
     this.activePage = 'home';
 
+    this._friends = {};
+
     this.auth = firebase.auth();
     this.db = firebase.database();
 
@@ -75,6 +77,7 @@ class Fello {
   onAuthStateChanged(user) {
     if (user) {
       this.saveUserData(user);
+      this.updateFriends();
     }
 
     Fello.navigationHandler();
@@ -165,11 +168,54 @@ class Fello {
     });
   }
 
+  updateFriends() {
+    const userId = firebase.auth().currentUser.uid;
+    const myFriendsRef = this.db.ref(`/users-friends/${userId}`);
+    myFriendsRef.off();
+    this._friends = {};
+
+    this.clearFriends();
+
+    myFriendsRef.on('value', (data) => {
+      let ids = data.val() ? Object.keys(data.val()) : [];
+      ids.forEach((uid) => {
+        this._friends[uid] = {};
+        this.getFriendInfo(uid);
+      });
+      if (document.getElementsByClassName('my-friends-count').length) {
+        document.getElementsByClassName('my-friends-count')[0].innerText = Object.keys(this._friends).length;
+      }
+      this.updateFriendStatuses();
+    });
+    myFriendsRef.on('child_removed', () => {
+      this.updateFriends();
+    });
+  }
+
+  getFriendInfo(uid) {
+    this.db.ref(`/users/${uid}`).on('value', (data) => {
+      this._friends[uid] = data.val();
+      this.displayFriend(uid, this._friends[uid]);
+    });
+  }
+
+  makeFriends(userId, otherUserId) {
+    let updates = {};
+    updates[`/users-friends/${userId}/${otherUserId}`] = true;
+    updates[`/users-friends/${otherUserId}/${userId}`] = true;
+    this.db.ref().update(updates);
+  }
+
+  unMakeFriends(userId, otherUserId) {
+    this.db.ref(`/users-friends/${userId}/${otherUserId}`).remove();
+    this.db.ref(`/users-friends/${otherUserId}/${userId}`).remove();
+  }
+
   /* View handling methods, nothing spectacular here... */
 
   showPage(page) {
     const pageIds = [
-      'page-home'
+      'page-home', 'page-friends'
     ];
 
     this.toggleLoader(true);
@@ -184,6 +230,15 @@ class Fello {
     });
 
     switch (page) {
+      case 'friends':
+        if (!firebase.auth().currentUser) {
+          return this.showPage('home');
+        }
+        this.activePage = 'friends';
+
+        document.getElementById('page-friends').style.display = 'block';
+        this.toggleLoader(false);
+        break;
       case 'home':
       default:
         this.activePage = 'home';
@@ -223,8 +278,11 @@ class Fello {
     const navBarHeaderEl = document.getElementsByClassName('navbar-header')[0];
     document.getElementById('signin-menu-item').style.display = 'block';
     document.getElementById('logout-menu-item').style.display = 'none';
+    document.getElementById('friends-menu-item').style.display = 'none';
+
     if (firebase.auth().currentUser) {
       document.getElementById('signin-menu-item').style.display = 'none';
+      document.getElementById('friends-menu-item').style.display = 'block';
 
       const logoutItem = document.getElementById('logout-menu-item');
       logoutItem.style.display = 'block';
@@ -239,6 +297,8 @@ class Fello {
     });
     if (this.activePage === 'home') {
       document.getElementById('home-menu-item').className = 'menu-item active';
+    } else if (this.activePage === 'friends') {
+      document.getElementById('friends-menu-item').className = 'menu-item active';
     }
   }
 
@@ -303,6 +363,7 @@ class Fello {
         </div>
       </div>`;
     } else {
+      const friendStatus = this.getFriendStatus(userId, data.uid);
       html = `<div id="msg-${key}" class="media media-other well">
         <div class="media-left">
           <a>
@@ -312,7 +373,7 @@ class Fello {
         <div class="media-body">
           <blockquote>
             ${bodyHtml}
-            <footer class="msg-footer">${data.username}</footer>
+            <footer class="msg-footer">${data.username} <div class="friendstatus" data-uid="${data.uid}">${friendStatus}</div></footer>
           </blockquote>
         </div>
       </div>`;
@@ -348,6 +409,13 @@ class Fello {
           postElement.getElementsByClassName('thumbnail-link')[0].href = data.imageUrl;
         });
       }
+    }
+
+    if (postElement.getElementsByClassName('btn-add_friend').length) {
+      const friendButton = postElement.getElementsByClassName('btn-add_friend')[0];
+      friendButton.onclick = () => {
+        this.makeFriends(userId, data.uid);
+      };
     }
 
     return postElement;
@@ -412,10 +480,94 @@ class Fello {
     };
   }
 
+  clearFriends() {
+    document.getElementById('friends-row').getElementsByClassName('items')[0].innerHTML = '';
+  }
+
+  displayFriend(key, data) {
+    const containerElement = document.getElementById('friends-row').getElementsByClassName('items')[0];
+    let el = this.createFriendElement(key, data);
+    if (!document.getElementById(`friend-${key}`)) {
+      containerElement.insertBefore(el, containerElement.firstChild);
+    }
+  }
+
+  updateFriendStatuses() {
+    if (!document.getElementsByClassName('media').length) {
+      return;
+    }
+    const userId = firebase.auth().currentUser.uid;
+    Array.prototype.forEach.call(document.getElementsByClassName('media'), (el) => {
+      if (el.getElementsByClassName('friendstatus').length) {
+        const fsEl = el.getElementsByClassName('friendstatus')[0];
+        const authorUserId = fsEl.dataset.uid;
+        const friendStatus = this.getFriendStatus(userId, authorUserId);
+        fsEl.innerHTML = friendStatus;
+        if (el.getElementsByClassName('btn-add_friend').length) {
+          const friendButton = el.getElementsByClassName('btn-add_friend')[0];
+          friendButton.onclick = () => {
+            this.makeFriends(userId, authorUserId);
+          };
+        }
+      }
+    });
+  }
+
+  createFriendElement(key, data) {
+    console.log('createFriendElement', key)
+    const userId = firebase.auth().currentUser ? firebase.auth().currentUser.uid : null;
+    const profileUrl = data.profileImage || 'http://placekitten.com/62/62';
+
+    const html = `<div id="friend-${key}" class="list-group-item">
+      <div class="media media-other">
+        <div class="media-left">
+          <a>
+            <img class="media-object" src="${profileUrl}" width="64" height="64" alt="">
+          </a>
+        </div>
+        <div class="media-body">
+          <h4 class="media-heading">${data.username}</h4>
+          <div class="btn btn-xs btn-danger btn-remove">remove friend</div>
+        </div>
+      </div>
+    </div>`;
+
+    // Create the DOM element from the HTML.
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    let friendElement = div.firstChild;
+    if (document.getElementById(`friend-${key}`)) {
+      friendElement = document.getElementById(`friend-${key}`);
+    }
+
+    const removeButton = friendElement.getElementsByClassName('btn-remove')[0];
+    removeButton.onclick = () => {
+      this.unMakeFriends(userId, key);
+    };
+
+    return friendElement;
+  }
+
+  getFriendStatus(userId, msgUserId) {
+    let friendStatus = '';
+    if (!userId) {
+      return friendStatus;
+    }
+    if (this._friends[msgUserId]) {
+      friendStatus = `<span class="label label-success">friend</span>`;
+    } else {
+      friendStatus = `<div class="btn btn-xs btn-info btn-add_friend">add friend</div>`;
+    }
+    return friendStatus;
+  }
+
   /* Static methods */
 
   static navigationHandler() {
     switch (location.hash) {
+      case '#/friends':
+        window.fello.showPage('friends');
+        break;
       case '#/':
       default:
         window.fello.showPage('home');

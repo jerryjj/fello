@@ -70,6 +70,7 @@
             <div class="collapse navbar-collapse" id="top-nav">
               <ul class="nav navbar-nav nav-pills pull-right">
                 <li class="menu-item active" role="home" id="home-menu-item"><a href="#/">Home</a></li>
+                <li class="menu-item" role="friends" id="friends-menu-item" style="display: none;"><a href="#/friends">Friends</a></li>
                 <li class="menu-item" role="signin" id="signin-menu-item" style="display: none;"><a class="signin-link" href="#">Sign In</a></li>
                 <li class="menu-item" role="logout" id="logout-menu-item" style="display: none;"><a href="#">Logout</a></li>
                 <li class="menu-item" role="presentation"><a href="https://github.com/jerryjj/fello" target="_blank">Source</a></li>
@@ -93,6 +94,7 @@
                 <div class="panel-body">
                   <ul class="nav nav-pills" role="tablist">
                     <li role="messages"><a>My Messages: <span class="badge my-message-count">0</span></a></li>
+                    <li role="friends"><a href="#/friends">Friends: <span class="badge my-friends-count">0</span></a></li>
                   </ul>
                   <p class="text-center">
                     This is a mini social messaging platform. Built as a demo for "Serverless with Firebase".
@@ -147,6 +149,15 @@
 
           </div>
         </div> <!-- /#page-home -->
+
+        <div id="page-friends" style="display: none;">
+          <div id="friends-row" class="row">
+            <div class="col-lg-12">
+              <h4>Friends</h4>
+              <div class="list-group items"></div>
+            </div>
+          </div> <!-- /#friends-row -->
+        </div> <!-- /#page-friends -->
 
       </div>
 

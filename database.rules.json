@@ -2,13 +2,6 @@
   "rules": {
     ".read": false,
     ".write": false,
-    "users": {
-      ".write": "auth != null",
-      "$uid": {
-        ".read": "$uid === auth.uid",
-        ".write": "$uid === auth.uid"
-      }
-    },
     "messages": {
       ".read": true,
       ".write": "auth != null",
@@ -16,10 +9,23 @@
          ".validate": "newData.hasChildren(['body', 'username'])"
        }
     },
+    "users": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "$uid": {
+        ".write": "$uid === auth.uid"
+      }
+    },
     "users-messages": {
       "$uid": {
         ".read": "$uid === auth.uid",
         ".write": "$uid === auth.uid"
+      }
+    },
+    "users-friends": {
+      ".write": "auth != null",
+      "$uid": {
+        ".read": "$uid === auth.uid"
       }
     }
   }

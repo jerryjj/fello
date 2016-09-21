@@ -1,20 +1,16 @@
-# Awesome, now do not get burned
+# Super! I like you already
 
-Welcome to the part four, of this demo.
+Welcome to the part five, of this demo.
 The next instructions make the assumption that you have already finished the
 previous steps.
 
-* 1. Deploy Storage rules
-
-Copy the _storage.rules.tpl_ file as _storage.rules_ and replace
-the *FIREBASE_PROJECT_ID* with correct project id.
-Then deploy these rules to Firebase.
+* 1. Deploy new Database rules
 
 ```sh
-firebase deploy --only storage
+firebase deploy --only database
 ```
 
-* 2. Test the application locally
+* 2. Test the application locally (optionally with two browsers and two accounts)
 
 ```sh
 npm run dev
