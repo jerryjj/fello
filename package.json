@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "gulp watch",
     "deploy": "NODE_ENV=production gulp && firebase deploy --only hosting",
+    "server": "node src/server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Jerry Jalava <jerry@qvik.fi>",
@@ -34,5 +35,7 @@
     "webpack": "^1.13.2",
     "wiredep": "^4.0.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "firebase": "^3.4.0"
+  }
 }

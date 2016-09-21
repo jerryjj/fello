@@ -27,6 +27,12 @@
       "$uid": {
         ".read": "$uid === auth.uid"
       }
+    },
+    "pushtokens": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid"
+      }
     }
   }
 }

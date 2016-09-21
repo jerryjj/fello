@@ -6,3 +6,4 @@ public
 storage.rules
 development.env
 npm-debug.log
+service-account.json

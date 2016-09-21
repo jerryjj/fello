@@ -78,6 +78,8 @@ class Fello {
     if (user) {
       this.saveUserData(user);
       this.updateFriends();
+
+      this.listenForNotifications();
     }
 
     Fello.navigationHandler();
@@ -124,7 +126,8 @@ class Fello {
       uid: uid,
       username: user.username,
       profileImage: user.profileImage,
-      body: messageData.body
+      body: messageData.body,
+      createdAt: firebase.database.ServerValue.TIMESTAMP
     };
 
     // User uploaded a image, replace the image url with a loading image
@@ -514,7 +517,6 @@ class Fello {
   }
 
   createFriendElement(key, data) {
-    console.log('createFriendElement', key)
     const userId = firebase.auth().currentUser ? firebase.auth().currentUser.uid : null;
     const profileUrl = data.profileImage || 'http://placekitten.com/62/62';
 
@@ -559,6 +561,48 @@ class Fello {
       friendStatus = `<div class="btn btn-xs btn-info btn-add_friend">add friend</div>`;
     }
     return friendStatus;
+  }
+
+  /* Push messages related */
+
+  listenForNotifications() {
+    if ('serviceWorker' in navigator) {
+      const updateUserSubscription = (subscription) => {
+        const parts = subscription.endpoint.split('/');
+        const token = parts[parts.length - 1];
+        // console.debug('push token', token);
+        this.db.ref(`pushtokens/${firebase.auth().currentUser.uid}`).set(token);
+      };
+
+      const serviceWorkerReady = (registration) => {
+        // console.log('registration', registration)
+        registration.pushManager.getSubscription()
+        .then((subscription) => {
+          if (subscription) {
+            // console.log('already subscribed', subscription);
+            updateUserSubscription(subscription);
+          } else {
+            registration.pushManager.subscribe({
+              userVisibleOnly: true
+            }).then((subscription) => {
+              // console.log('new subscription', subscription);
+              updateUserSubscription(subscription);
+            }).catch((err) => {
+              if (Notification.permission === 'denied') {
+                console.log('Permission for Notifications was denied');
+              } else {
+                console.error('Unable to subscribe to push.', err);
+              }
+            });
+          }
+        });
+      };
+
+      navigator.serviceWorker.ready.then(serviceWorkerReady);
+      navigator.serviceWorker.register('/sw.js').catch((err) => {
+        console.error('Error registering service worker', err);
+      });
+    }
   }
 
   /* Static methods */

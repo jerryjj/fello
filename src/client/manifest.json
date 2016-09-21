@@ -1,0 +1,8 @@
+{
+  "name": "Fello",
+  "short_name": "Fello",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "gcm_sender_id": "FIREBASE_MSG_SENDER_ID"
+}
