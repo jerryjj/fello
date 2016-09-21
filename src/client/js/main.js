@@ -52,6 +52,8 @@ class Fello {
 
     // Bind event listeners to the Sign-In buttons
     this.prepareAuthButtons();
+
+    this.updateOnlineViewersCount();
   }
 
   /* Authentication parts */
@@ -80,6 +82,8 @@ class Fello {
       this.updateFriends();
 
       this.listenForNotifications();
+
+      this.updateOnlineUserCount();
     }
 
     Fello.navigationHandler();
@@ -189,6 +193,8 @@ class Fello {
         document.getElementsByClassName('my-friends-count')[0].innerText = Object.keys(this._friends).length;
       }
       this.updateFriendStatuses();
+
+      this.updateOnlineFriends();
     });
     myFriendsRef.on('child_removed', () => {
       this.updateFriends();
@@ -506,6 +512,7 @@ class Fello {
         const authorUserId = fsEl.dataset.uid;
         const friendStatus = this.getFriendStatus(userId, authorUserId);
         fsEl.innerHTML = friendStatus;
+
         if (el.getElementsByClassName('btn-add_friend').length) {
           const friendButton = el.getElementsByClassName('btn-add_friend')[0];
           friendButton.onclick = () => {
@@ -603,6 +610,57 @@ class Fello {
         console.error('Error registering service worker', err);
       });
     }
+  }
+
+  /* Presence parts */
+
+  updateOnlineViewersCount() {
+    const connectedRef = this.db.ref('.info/connected');
+    const viewersRef = this.db.ref('/presence/viewers');
+    const viewersConnectedRef = viewersRef.push();
+
+    connectedRef.on('value', (snapshot) => {
+      if (snapshot.val() === true) {
+        viewersConnectedRef.onDisconnect().remove();
+        viewersConnectedRef.set(true);
+      }
+    });
+
+    viewersRef.on('value', (snapshot) => {
+      document.getElementsByClassName('online-viewer-count')[0].innerText = snapshot.numChildren();
+    });
+  }
+
+  updateOnlineUserCount() {
+    const connectedRef = this.db.ref('.info/connected');
+    const userConnectedRef = this.db.ref(`/presence/connected/${firebase.auth().currentUser.uid}`);
+    connectedRef.on('value', (snapshot) => {
+      if (snapshot.val() === true) {
+        userConnectedRef.onDisconnect().remove();
+        userConnectedRef.set(true);
+      }
+    });
+  }
+
+  updateOnlineFriends() {
+    const allConnectedRef = this.db.ref('/presence/connected');
+    allConnectedRef.on('value', (snapshot) => {
+      const onlineUids = Object.keys(snapshot.val());
+      const onlineFriendIds = Object.keys(this._friends).filter((uid) => {
+        return onlineUids.indexOf(uid) !== -1;
+      });
+
+      const listEl = document.getElementsByClassName('online-friends-list')[0];
+      listEl.innerHTML = '';
+      onlineFriendIds.forEach((uid) => {
+        this.db.ref(`/users/${uid}/username`).once('value', (data) => {
+          const friendEl = document.createElement('span');
+          friendEl.className = 'label label-success';
+          friendEl.innerText = data.val();
+          listEl.insertBefore(friendEl, listEl.firstChild);
+        });
+      });
+    });
   }
 
   /* Static methods */

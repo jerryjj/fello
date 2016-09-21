@@ -33,6 +33,19 @@
         ".read": "$uid === auth.uid",
         ".write": "$uid === auth.uid"
       }
+    },
+    "presence": {
+      "viewers": {
+        ".read": true,
+        "$id": {
+          ".write": true,
+          ".validate": "newData.val() === true"
+        }
+      },
+      "connected": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
     }
   }
 }

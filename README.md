@@ -12,7 +12,8 @@ This repository has been split into different feature branches.
 3. [step_three](https://github.com/jerryjj/fello/tree/step_three): Realtime Database
 4. [step_four](https://github.com/jerryjj/fello/tree/step_four): Firebase Storage
 5. [step_five](https://github.com/jerryjj/fello/tree/step_five): Simple relations in Realtime Database
-6. [step_six](https://github.com/jerryjj/fello/tree/step_six): **Cloud Messaging**
+6. [step_six](https://github.com/jerryjj/fello/tree/step_six): Cloud Messaging
+7. [step_seven](https://github.com/jerryjj/fello/tree/step_seven): **Online Presence**
 
 You can checkout any of the branches at any time and just read the STEP_INFO.md
 for information regarding that step (deployment info, changes, etc).
