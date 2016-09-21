@@ -514,7 +514,6 @@ class Fello {
   }
 
   createFriendElement(key, data) {
-    console.log('createFriendElement', key)
     const userId = firebase.auth().currentUser ? firebase.auth().currentUser.uid : null;
     const profileUrl = data.profileImage || 'http://placekitten.com/62/62';
 
