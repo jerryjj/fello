@@ -148,7 +148,6 @@ gulp.task('manifests', () => {
 });
 
 gulp.task('scripts', () => {
-  console.log('scripts')
   const entries = Object.keys(webpackConfig.entry).map((key) => {
     return webpackConfig.entry[key];
   });
