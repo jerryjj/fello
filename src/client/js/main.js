@@ -2,6 +2,30 @@
 
 const PLACEHOLDER_LOADING_URL = '/images/loader.gif';
 
+const calculateImageThumbnailSize = (width, height) => {
+  const maxWidth = 200;
+  const maxHeight = 200;
+  let finalWidth = width;
+  let finalHeight = height;
+  let ratio = 0;
+
+  if (width > maxWidth) {
+    ratio = maxWidth / width;
+    width = width * ratio;
+    height = height * ratio;
+    finalWidth = maxWidth;
+    finalHeight = height;
+  }
+
+  if (height > maxHeight) {
+    ratio = maxHeight / height;
+    finalWidth = width * ratio;
+    finalHeight = maxHeight;
+  }
+
+  return [Math.round(finalWidth), Math.round(finalHeight)];
+};
+
 class Fello {
   constructor() {
     const storage = firebase.storage();
@@ -11,6 +35,10 @@ class Fello {
 
     this.auth = firebase.auth();
     this.db = firebase.database();
+
+    // Get reference to our storage folder
+    this.storage = firebase.storage();
+    this.uploadsRef = this.storage.ref().child('uploads');
 
     // Reference to the /messages/ database path.
     this.messagesRef = this.db.ref('messages');
@@ -96,6 +124,11 @@ class Fello {
       body: messageData.body
     };
 
+    // User uploaded a image, replace the image url with a loading image
+    if (messageData.image) {
+      msg.imageUrl = PLACEHOLDER_LOADING_URL;
+    }
+
     // Get a key for a new Post.
     const newMsgKey = this.messagesRef.push().key;
 
@@ -106,6 +139,29 @@ class Fello {
 
     this.db.ref().update(updates).then((data) => {
       this.updateMeBlock();
+
+      // User uploaded image, upload it to the Storage
+      // and then update the message objects with the correct file link
+      if (messageData.image) {
+        // Upload the image to Firebase Storage.
+        const uploadTask = this.uploadsRef.child(
+          `${uid}/${Date.now()}/${messageData.image.name}`
+        ).put(messageData.image, {
+          'contentType': messageData.image.type
+        });
+
+        uploadTask.on('state_changed', null, (err) => {
+          console.error('There was an error uploading a file to Firebase Storage:', err);
+        }, () => {
+          // Get the file's Storage URI and update the message imageUrl placeholder.
+          const imageUrl = uploadTask.snapshot.metadata.downloadURLs[0];
+
+          let updates = {};
+          updates[`/messages/${newMsgKey}/imageUrl`] = imageUrl;
+          updates[`/users-messages/${uid}/${newMsgKey}/imageUrl`] = imageUrl;
+          this.db.ref().update(updates);
+        });
+      }
     });
   }
 
@@ -226,6 +282,11 @@ class Fello {
     const profileUrl = data.profileImage ? data.profileImage : 'http://placekitten.com/62/62';
 
     let bodyHtml = '<p class="body"></p>';
+    if (data.imageUrl) {
+      bodyHtml += `<a href="" target="_blank" class="thumbnail thumbnail-link">
+        <img class="image" src="${PLACEHOLDER_LOADING_URL}" alt="">
+      </a>`;
+    }
 
     if (userId === data.uid) {
       html = `<div id="msg-${key}" class="media media-me well">
@@ -274,6 +335,20 @@ class Fello {
     if (postElement.getElementsByClassName('body').length) {
       postElement.getElementsByClassName('body')[0].innerText = bodyTxt;
     }
+    if (postElement.getElementsByClassName('image').length) {
+      const imgEl = postElement.getElementsByClassName('image')[0];
+      const tmpImgEl = document.createElement('img');
+      tmpImgEl.src = data.imageUrl;
+      if (data.imageUrl != PLACEHOLDER_LOADING_URL) {
+        tmpImgEl.addEventListener('load', () => {
+          const size = calculateImageThumbnailSize(tmpImgEl.width, tmpImgEl.height);
+          imgEl.width = size[0];
+          imgEl.height = size[1];
+          imgEl.src = data.imageUrl;
+          postElement.getElementsByClassName('thumbnail-link')[0].href = data.imageUrl;
+        });
+      }
+    }
 
     return postElement;
   }
@@ -281,6 +356,23 @@ class Fello {
   enablePostForm() {
     const postForm = document.getElementById('post-form');
     const bodyInput = document.getElementById('body-i');
+    const imageInput = document.getElementById('file-i');
+    const cameraIcon = postForm.getElementsByClassName('glyphicon-camera')[0];
+    const selectedAttEl = postForm.getElementsByClassName('selected-attachment')[0];
+
+    cameraIcon.addEventListener('click', () => {
+      imageInput.click();
+    });
+
+    imageInput.addEventListener('change', () => {
+      selectedAttEl.style.display = 'inline-block';
+      if (imageInput.files.length) {
+        const file = imageInput.files[0];
+        if (file.type.match('image.*')) {
+          selectedAttEl.getElementsByClassName('filename')[0].innerText = imageInput.files[0].name;
+        }
+      }
+    });
 
     postForm.onsubmit = (e) => {
       e.preventDefault();
@@ -291,8 +383,15 @@ class Fello {
         return;
       }
 
-      if (bodyInput.value) {
+      if (bodyInput.value || imageInput.files.length) {
         let bodyText = bodyInput.value;
+        let image = null;
+        if (imageInput.files.length) {
+          const file = imageInput.files[0];
+          if (file.type.match('image.*')) {
+            image = imageInput.files[0];
+          }
+        }
 
         // Fetch the user info as a precaution from the DB first
         this.db.ref(`/users/${userId}`).once('value').then((snapshot) => {
@@ -301,12 +400,14 @@ class Fello {
             firebase.auth().currentUser.uid,
             user,
             {
-              body: bodyText
+              body: bodyText,
+              image: image
             }
           );
         });
       }
 
+      selectedAttEl.style.display = 'none';
       e.target.reset();
     };
   }

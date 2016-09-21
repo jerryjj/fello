@@ -121,7 +121,12 @@
                         <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
                           <div class="form-group">
                             <textarea class="form-control input-lg" id="body-i" placeholder="Write a nice post! (140 characters)"></textarea>
+                            <span class="help-block selected-attachment" style="display: none;">Posting also file: <span class="filename"></span></span>
                           </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 attachment-column">
+                          <div class="glyphicon glyphicon-camera"></div>
+                          <input type="file" class="form-control hidden" id="file-i" />
                         </div>
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                           <button type="submit" class="btn btn-primary btn-publish pull-left">Publish</button>

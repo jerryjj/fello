@@ -36,6 +36,9 @@ body {
 #post-row > .panel {
   margin-bottom: 5px;
 }
+.attachment-column .glyphicon-camera {
+  font-size: 4em;
+}
 
 /* Feed items */
 .media-left, .media > .media-left {
@@ -51,5 +54,11 @@ body {
 @media (max-width: 768px) {
   .page-content {
     padding: 15px 10px 0 10px;
+  }
+  .attachment-column {
+    padding-left: 0;
+  }
+  .attachment-column .glyphicon-camera {
+    font-size: 3em;
   }
 }
