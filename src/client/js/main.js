@@ -645,7 +645,7 @@ class Fello {
   updateOnlineFriends() {
     const allConnectedRef = this.db.ref('/presence/connected');
     allConnectedRef.on('value', (snapshot) => {
-      const onlineUids = Object.keys(snapshot.val());
+      const onlineUids = snapshot.val() ? Object.keys(snapshot.val()) : [];
       const onlineFriendIds = Object.keys(this._friends).filter((uid) => {
         return onlineUids.indexOf(uid) !== -1;
       });
