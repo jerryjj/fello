@@ -21,6 +21,13 @@ for information regarding that step (deployment info, changes, etc).
 
 Even though this example is Serverless, you need Node.JS installed for development.
 
+I built this demo to showcase on different [Firebase](https://firebase.google.com) features
+in different meetups, etc.
+
+NOTE! Pay no attention to the UI code ;) I could have used a UI Framework like (Angular, React, etc),
+but desided to just hack something together quickly so it doesn't hide the base logic of the functionality
+I wanted to show.
+
 ## Local development
 
 * 1. Clone the repo
