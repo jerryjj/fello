@@ -3,7 +3,7 @@
 This is an example project to demonstrate serverless coding with Firebase.
 Demo: https://fello.backender.io/
 
-The slides used with this demo repository can be found from serverless-firebase-fello.pdf -file.
+I'll upload slides with notes a bit later.
 
 # How to use this repository
 
