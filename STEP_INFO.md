@@ -61,3 +61,9 @@ You can follow the instructions in [here](https://firebase.google.com/docs/serve
 ```sh
 export FIREBASE_SERVER_KEY=MY-SERVER-KEY
 ```
+
+* 6.4 Run the server
+
+```sh
+npm run server
+```
