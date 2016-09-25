@@ -16,7 +16,7 @@ firebase deploy --only database
 npm run dev
 ```
 
-Login with your Google account (and log out)
+Write some message (you can open another browser also, to see them both updating)
 
 * 3. Deploy this new version to to Firebase Hosting
 
