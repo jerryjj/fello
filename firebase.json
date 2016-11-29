@@ -9,6 +9,50 @@
       "firebase.json",
       "database-rules.json",
       "storage.rules"
+    ],
+    "headers": [
+      {
+        "source" : "**/*.@(eot|otf|ttf|ttc|woff|font.css)",
+        "headers" : [ {
+          "key" : "Access-Control-Allow-Origin",
+          "value" : "*"
+        } ]
+      },
+      {
+        "source" : "**/*.@(jpg|jpeg|gif|png)",
+        "headers" : [ {
+          "key" : "Cache-Control",
+          "value" : "max-age=7200"
+        } ]
+      },
+      {
+        "source" : "/",
+        "headers" : [ {
+          "key" : "Cache-Control",
+          "value" : "no-cache"
+        } ]
+      },
+      {
+        "source" : "index.html",
+        "headers" : [ {
+          "key" : "Cache-Control",
+          "value" : "no-cache"
+        } ]
+      },
+      {
+        "source" : "**/*.css",
+        "headers" : [ {
+          "key" : "Cache-Control",
+          "value" : "no-cache"
+        } ]
+      },
+      {
+        "source" : "**/*.js",
+        "headers" : [ {
+          "key" : "Cache-Control",
+          "value" : "no-cache"
+        } ]
+      }
     ]
   }
 }
